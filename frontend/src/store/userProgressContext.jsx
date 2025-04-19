@@ -6,6 +6,7 @@ const UserProgressContext = createContext({
   hideCart: () => {},
   showCheckout: () => {},
   hideCheckout: () => {},
+  API_URL: "",
 });
 
 export function UserProgressContextProvider({ children }) {
@@ -33,6 +34,7 @@ export function UserProgressContextProvider({ children }) {
     hideCart,
     showCheckout,
     hideCheckout,
+    API_URL: "https://food-order-app-94or.onrender.com",
   };
 
   return (

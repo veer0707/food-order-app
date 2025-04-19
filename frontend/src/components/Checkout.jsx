@@ -17,6 +17,7 @@ const requestConfig = {
 export default function Checkout() {
   const cartCtx = useContext(CartContext);
   const userProgressCtx = useContext(UserProgressContext);
+  const API_URL = userProgressCtx.API_URL;
 
   const {
     data,
@@ -24,7 +25,7 @@ export default function Checkout() {
     error,
     sendRequest,
     clearData,
-  } = useHttp("http://localhost:3000/orders", requestConfig);
+  } = useHttp(API_URL + "/orders", requestConfig);
 
   const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
     return totalPrice + item.quantity * item.price;
