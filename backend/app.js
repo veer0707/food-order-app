@@ -1,47 +1,152 @@
-import fs from "node:fs/promises";
+// import fs from "node:fs/promises";
 
+// import bodyParser from "body-parser";
+// import express from "express";
+// import cors from "cors";
+
+// const app = express();
+
+// const allowedOrigins = [
+//   "https://food-order-app-coral-nine.vercel.app", // Replace with your Vercel frontend URL
+//   "http://localhost:5173", // Local development URL for testing
+// ];
+
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       // Allow requests with no origin (like mobile apps or curl requests)
+//       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//   })
+// );
+
+// app.use(bodyParser.json());
+// app.use(express.static("public"));
+
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+//   next();
+// });
+
+// app.get("/meals", async (req, res) => {
+//   const meals = await fs.readFile("./data/available-meals.json", "utf8");
+//   res.json(JSON.parse(meals));
+// });
+
+// app.post("/orders", async (req, res) => {
+//   const orderData = req.body.order;
+
+//   if (
+//     orderData === null ||
+//     orderData.items === null ||
+//     orderData.items.length === 0
+//   ) {
+//     return res.status(400).json({ message: "Missing data." });
+//   }
+
+//   if (
+//     orderData.customer.email === null ||
+//     !orderData.customer.email.includes("@") ||
+//     orderData.customer.name === null ||
+//     orderData.customer.name.trim() === "" ||
+//     orderData.customer.street === null ||
+//     orderData.customer.street.trim() === "" ||
+//     orderData.customer["postal-code"] === null ||
+//     orderData.customer["postal-code"].trim() === "" ||
+//     orderData.customer.city === null ||
+//     orderData.customer.city.trim() === ""
+//   ) {
+//     return res.status(400).json({
+//       message:
+//         "Missing data: Email, name, street, postal code or city is missing.",
+//     });
+//   }
+
+//   const newOrder = {
+//     ...orderData,
+//     id: (Math.random() * 1000).toString(),
+//   };
+//   const orders = await fs.readFile("./data/orders.json", "utf8");
+//   const allOrders = JSON.parse(orders);
+//   allOrders.push(newOrder);
+//   await fs.writeFile("./data/orders.json", JSON.stringify(allOrders));
+//   res.status(201).json({ message: "Order created!" });
+// });
+
+// app.use((req, res) => {
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(200);
+//   }
+
+//   res.status(404).json({ message: "Not found" });
+// });
+
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+import fs from "node:fs/promises";
 import bodyParser from "body-parser";
 import express from "express";
+import cors from "cors";
 
 const app = express();
+
+// Define allowed origins for CORS
+const allowedOrigins = [
+  "https://food-order-app-coral-nine.vercel.app", // Vercel frontend URL
+  "http://localhost:5173", // Local development URL
+];
+
+// CORS middleware configuration
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests from listed origins and requests with no origin (like mobile apps or curl requests)
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: "GET, POST", // Allow GET and POST methods
+    allowedHeaders: "Content-Type", // Allow Content-Type header
+  })
+);
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
-
 app.get("/meals", async (req, res) => {
-  const meals = await fs.readFile("./data/available-meals.json", "utf8");
-  res.json(JSON.parse(meals));
+  try {
+    const meals = await fs.readFile("./data/available-meals.json", "utf8");
+    res.json(JSON.parse(meals));
+  } catch (err) {
+    res.status(500).json({ message: "Error reading meals data" });
+  }
 });
 
 app.post("/orders", async (req, res) => {
   const orderData = req.body.order;
 
-  if (
-    orderData === null ||
-    orderData.items === null ||
-    orderData.items.length === 0
-  ) {
+  if (!orderData || !orderData.items || orderData.items.length === 0) {
     return res.status(400).json({ message: "Missing data." });
   }
 
   if (
-    orderData.customer.email === null ||
+    !orderData.customer.email ||
     !orderData.customer.email.includes("@") ||
-    orderData.customer.name === null ||
-    orderData.customer.name.trim() === "" ||
-    orderData.customer.street === null ||
-    orderData.customer.street.trim() === "" ||
-    orderData.customer["postal-code"] === null ||
-    orderData.customer["postal-code"].trim() === "" ||
-    orderData.customer.city === null ||
-    orderData.customer.city.trim() === ""
+    !orderData.customer.name?.trim() ||
+    !orderData.customer.street?.trim() ||
+    !orderData.customer["postal-code"]?.trim() ||
+    !orderData.customer.city?.trim()
   ) {
     return res.status(400).json({
       message:
@@ -49,22 +154,25 @@ app.post("/orders", async (req, res) => {
     });
   }
 
-  const newOrder = {
-    ...orderData,
-    id: (Math.random() * 1000).toString(),
-  };
-  const orders = await fs.readFile("./data/orders.json", "utf8");
-  const allOrders = JSON.parse(orders);
-  allOrders.push(newOrder);
-  await fs.writeFile("./data/orders.json", JSON.stringify(allOrders));
-  res.status(201).json({ message: "Order created!" });
+  const newOrder = { ...orderData, id: (Math.random() * 1000).toString() };
+
+  try {
+    const orders = await fs.readFile("./data/orders.json", "utf8");
+    const allOrders = JSON.parse(orders);
+    allOrders.push(newOrder);
+    await fs.writeFile("./data/orders.json", JSON.stringify(allOrders));
+    res.status(201).json({ message: "Order created!" });
+  } catch (err) {
+    res.status(500).json({ message: "Error processing the order" });
+  }
+});
+
+// Handle pre-flight requests (OPTIONS requests)
+app.options("*", (req, res) => {
+  res.sendStatus(200);
 });
 
 app.use((req, res) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
   res.status(404).json({ message: "Not found" });
 });
 

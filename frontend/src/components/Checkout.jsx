@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useActionState } from "react";
 import Modal from "./UI/Modal";
 import CartContext from "../store/CartContext";
 import { currencyFormatter } from "../util/formatting";
@@ -6,6 +6,7 @@ import Input from "./UI/Input";
 import Button from "./UI/Button.jsx";
 import UserProgressContext from "../store/userProgressContext";
 import useHttp from "../hooks/useHttp.js";
+import Error from "./Error.jsx";
 
 const requestConfig = {
   method: "POST",
@@ -19,13 +20,10 @@ export default function Checkout() {
   const userProgressCtx = useContext(UserProgressContext);
   const API_URL = userProgressCtx.API_URL;
 
-  const {
-    data,
-    isLoading: isSending,
-    error,
-    sendRequest,
-    clearData,
-  } = useHttp(API_URL + "/orders", requestConfig);
+  const { data, error, sendRequest, clearData } = useHttp(
+    API_URL + "/orders",
+    requestConfig
+  );
 
   const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
     return totalPrice + item.quantity * item.price;
@@ -41,13 +39,10 @@ export default function Checkout() {
     clearData();
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    const fd = new FormData(event.target);
+  async function checkoutAction(prevState, fd) {
     const customerData = Object.fromEntries(fd.entries());
 
-    sendRequest(
+    await sendRequest(
       JSON.stringify({
         order: {
           items: cartCtx.items,
@@ -56,7 +51,10 @@ export default function Checkout() {
       })
     );
   }
-
+  const [formState, formAction, isSending] = useActionState(
+    checkoutAction,
+    null
+  );
   let actions = (
     <>
       <Button textOnly type="button" onClick={handleClose}>
@@ -87,7 +85,7 @@ export default function Checkout() {
   }
   return (
     <Modal open={userProgressCtx.progress === "checkout"} onClose={handleClose}>
-      <form onSubmit={handleSubmit}>
+      <form action={formAction}>
         <h2>Checkout</h2>
         <p>Total Amount : {currencyFormatter.format(cartTotal)}</p>
         <Input label="Full Name" type="text" id="name" />
