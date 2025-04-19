@@ -103,6 +103,8 @@ const app = express();
 const allowedOrigins = [
   "https://food-order-app-coral-nine.vercel.app", // Vercel frontend URL
   "http://localhost:5173", // Local development URL
+  "https://food-order-app-veereshs-projects-7914f7f4.vercel.app",
+  "https://food-order-app-git-main-veereshs-projects-7914f7f4.vercel.app",
 ];
 
 // CORS middleware configuration
