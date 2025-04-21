@@ -18,25 +18,28 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 3rem 10%;
+  padding: 2rem 5%;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 #main-header #title {
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 #main-header #title img {
-  width: 4rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
   object-fit: contain;
   border-radius: 50%;
   border: 2px solid #ffc404;
 }
 
 #main-header button {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-family: "Lato", sans-serif;
 }
 
@@ -46,7 +49,7 @@ h1 {
   font-size: 2rem;
   margin: 0;
   color: #ffc404;
-  letter-spacing: 0.2rem;
+  letter-spacing: 0.1rem;
   text-transform: uppercase;
 }
 
@@ -57,7 +60,7 @@ h1 {
   margin: 2rem auto;
   padding: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: 1rem;
 }
 
@@ -78,12 +81,12 @@ h1 {
 
 .meal-item img {
   width: 100%;
-  height: 20rem;
+  height: 16rem;
   object-fit: cover;
 }
 
 .meal-item h3 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
   margin: 0.75rem 0;
 }
@@ -121,6 +124,7 @@ h1 {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .modal-actions .text-button {
@@ -146,6 +150,8 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin: 0.5rem 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .cart-item p {
@@ -201,6 +207,7 @@ h1 {
 .control-row {
   display: flex;
   justify-content: flex-start;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -240,7 +247,7 @@ h1 {
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   padding: 1rem;
-  width: 80%;
+  width: 90%;
   max-width: 40rem;
   animation: fade-slide-up 0.3s ease-out forwards;
 }
@@ -258,5 +265,59 @@ h1 {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  #main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem 5%;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .meal-item img {
+    height: 14rem;
+  }
+
+  .meal-item h3 {
+    font-size: 1.1rem;
+  }
+
+  .meal-item-price {
+    padding: 0.4rem 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #main-header #title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .control-row {
+    flex-direction: column;
+  }
+
+  .meal-item img {
+    height: 12rem;
+  }
+
+  .modal {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .cart-total {
+    justify-content: center;
+  }
+
+  .modal-actions {
+    justify-content: center;
   }
 }
